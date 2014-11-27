@@ -10,14 +10,14 @@ public class Solution {
     }
 
     static String[] graph(String[] input) {
-        Map<String, Node> allNodes = new HashMap<String, Node>();
+        Map<String, Node> allNodes = buildNodes(input);
+        return traverseGraph(allNodes, input[input.length - 1]);
+    }
 
-        for (int i = 0; i < input.length; i++) {
+    private static Map<String, Node> buildNodes(String[] input) {
+        Map<String, Node> allNodes = new HashMap<String, Node>();
+        for (int i = 0; i < input.length - 1; i++) {
             String s = input[i];
-            boolean lastElement = i == (input.length - 1);
-            if (lastElement) {
-                return traverseGraph(allNodes, s);
-            }
             String[] nodeFriends = s.split(":");
             if (nodeFriends.length > 1) {
                 String nodeName = nodeFriends[0];
@@ -35,11 +35,16 @@ public class Solution {
                 allNodes.put(nodeFriends[0], new Node(nodeFriends[0]));
             }
         }
-        return null;
+        return allNodes;
     }
 
     private static String[] traverseGraph(Map<String, Node> allNodes, String rootNode) {
         Queue<KeyValue> mapResult = map(rootNode, allNodes);
+        ArrayList<String> result = reduce(mapResult);
+        return result.toArray(new String[result.size()]);
+    }
+
+    private static ArrayList<String> reduce(Queue<KeyValue> mapResult) {
         ArrayList<String> result = new ArrayList<String>();
         int currentLevel = 1;
         List<String> childRow = new ArrayList<String>();
@@ -54,7 +59,7 @@ public class Solution {
             }
         }
         result.add(join(childRow));
-        return result.toArray(new String[result.size()]);
+        return result;
     }
 
     private static Queue<KeyValue> map(String rootNode, Map<String, Node> allNodes) {
